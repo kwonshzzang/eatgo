@@ -45,7 +45,8 @@ class RestaurantControllerTests {
         mvc.perform(MockMvcRequestBuilders.get("/restaurants/1004"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("\"id\":1004")))
-                .andExpect(content().string(containsString("\"name\":\"Bob zip\"")));
+                .andExpect(content().string(containsString("\"name\":\"Bob zip\"")))
+                .andExpect(content().string(containsString("Kimchi")));
 
     }
 

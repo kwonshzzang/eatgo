@@ -1,8 +1,7 @@
 package kr.co.kwonshzzang.eatgo.interfaces;
 
-import kr.co.kwonshzzang.eatgo.domain.Restaurant;
-import kr.co.kwonshzzang.eatgo.domain.RestaurantRepository;
-import kr.co.kwonshzzang.eatgo.domain.RestaurantRepositoryImpl;
+import kr.co.kwonshzzang.eatgo.application.RestaurantService;
+import kr.co.kwonshzzang.eatgo.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,15 +14,15 @@ import java.util.List;
 @RequestMapping("/restaurants")
 public class RestaurantController {
     @Autowired
-    private RestaurantRepository restaurantRepository;
+    private RestaurantService restaurantService;
 
     @GetMapping
     public List<Restaurant> list() {
-        return restaurantRepository.findAll();
+        return restaurantService.getRestaurants();
     }
 
     @GetMapping("/{id}")
     public Restaurant detail(@PathVariable Long id) {
-        return restaurantRepository.findById(id);
+        return restaurantService.getRestaurant(id);
     }
 }

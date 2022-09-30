@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -40,7 +41,7 @@ class RestaurantServiceTests {
 
     @Test
     void getRestaurant() {
-        when(restaurantRepository.findById(1004L)).thenReturn(new Restaurant(1004L, "Bob zip", "Seoul"));
+        when(restaurantRepository.findById(1004L)).thenReturn(Optional.of(new Restaurant(1004L, "Bob zip", "Seoul")));
         when(menuItemRepository.findAllByRestaurantId(1004L)).thenReturn(Lists.newArrayList(new MenuItem("Kimchi")));
 
         Restaurant restaurant = restaurantService.getRestaurant(1004L);

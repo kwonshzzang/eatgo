@@ -30,8 +30,9 @@ class RestaurantServiceTests {
     @Test
     void getRestaurants() {
         when(restaurantRepository.findAll())
-                .thenReturn(Lists.newArrayList(new Restaurant(1004L, "Bob zip", "Seoul"),
-                                                          new Restaurant(2020L, "Cyber Food", "Busan")));
+                .thenReturn(Lists.newArrayList(
+                        Restaurant.builder().id(1004L).name("Bob zip").address("Seoul").build(),
+                        Restaurant.builder().id(2020L).name("Cyber Food").address("Busan").build()));
 
         List<Restaurant> restaurants = restaurantService.getRestaurants();
 
@@ -41,8 +42,12 @@ class RestaurantServiceTests {
 
     @Test
     void getRestaurant() {
-        when(restaurantRepository.findById(1004L)).thenReturn(Optional.of(new Restaurant(1004L, "Bob zip", "Seoul")));
-        when(menuItemRepository.findAllByRestaurantId(1004L)).thenReturn(Lists.newArrayList(new MenuItem("Kimchi")));
+        when(restaurantRepository.findById(1004L)).thenReturn(Optional.of(Restaurant.builder()
+                .id(1004L)
+                .name("Bob zip")
+                .address("Seoul")
+                .build()));
+        when(menuItemRepository.findAllByRestaurantId(1004L)).thenReturn(Lists.newArrayList(MenuItem.builder().name("Kimchi").build()));
 
         Restaurant restaurant = restaurantService.getRestaurant(1004L);
 
@@ -54,12 +59,24 @@ class RestaurantServiceTests {
 
     @Test
     void addRestaurant() {
-        when(restaurantRepository.save(new Restaurant("BeRyong", "Busan")))
-                .thenReturn(new Restaurant(1234L, "BeRyong", "Busan"));
+        Restaurant resource = Restaurant.builder().name("BeRyong").address("Busan").build();
+        Restaurant restaurant =Restaurant.builder().id(1234L).name("BeRyong").address("Busan").build();
 
-        Restaurant created = restaurantService.addRestaurant(new Restaurant( "BeRyong", "Busan"));
+        when(restaurantRepository.save(resource)).thenReturn(restaurant);
 
+        Restaurant created = restaurantService.addRestaurant(resource);
         assertEquals(created.getId(), 1234L);
+    }
+
+    @Test
+    void updateRestaurant() {
+        when(restaurantRepository.findById(1004L))
+                .thenReturn(Optional.of(Restaurant.builder().id(1004L).name("Bob zip").address("Seoul").build()));
+
+        Restaurant updated = restaurantService.updateRestaurant(1004L, Restaurant.builder().name("Sool zip").address("Busan").build());
+        assertEquals(updated.getName(), "Sool zip");
+        assertEquals(updated.getAddress(), "Busan");
+
     }
 
 

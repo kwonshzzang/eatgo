@@ -14,10 +14,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import  org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Arrays;
+
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -44,20 +47,22 @@ class RestaurantControllerTests {
     @Test
     void list() throws Exception {
         when(restaurantService.getRestaurants())
-                .thenReturn(Lists.newArrayList(new Restaurant(1004L, "JOKER House", "Seoul")));
+                .thenReturn(Lists.newArrayList(Restaurant.builder()
+                                .id(1004L)
+                                .name("JOKER House")
+                                .address("Seoul")
+                                .build()));
 
         mvc.perform(MockMvcRequestBuilders.get("/restaurants"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("\"id\":1004")))
                 .andExpect(content().string(containsString("\"name\":\"JOKER House\"")));
-
-
     }
 
     @Test
     void detail() throws Exception {
-        Restaurant restaurant = new Restaurant(1004L, "Bob zip", "Seoul");
-        restaurant.addMenuItem(new MenuItem("Kimchi"));
+        Restaurant restaurant = Restaurant.builder().id(1004L).name("Bob zip").address("Seoul").build();
+        restaurant.setMenuItems(Arrays.asList(MenuItem.builder().name("Kimchi").build()));
         when(restaurantService.getRestaurant(1004L)).thenReturn(restaurant);
 
         mvc.perform(MockMvcRequestBuilders.get("/restaurants/1004"))
@@ -70,17 +75,29 @@ class RestaurantControllerTests {
 
     @Test
     void create() throws Exception {
-        Restaurant restaurant = new Restaurant(1234L, "BeRyong", "Seoul");
-
-        mvc.perform(MockMvcRequestBuilders.post("/restaurants")
+        when(restaurantService.addRestaurant(any()))
+                .thenReturn(Restaurant.builder().id(1234L).name("BeRyong").address("Busan").build());
+         mvc.perform(MockMvcRequestBuilders.post("/restaurants")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"Beryong\",\"address\":\"Busan\"}"))
+                        .content("{\"name\":\"BeRyong\",\"address\":\"Busan\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("location", "/restaurants/1234"))
                 .andExpect(content().string("{}"));
 
         verify(restaurantService).addRestaurant(any());
     }
+
+    @Test
+    void update() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.patch("/restaurants/1004")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"JOKER Bar\", \"address\":\"Busan\"}"))
+                .andExpect(status().isOk());
+
+        verify(restaurantService).updateRestaurant(anyLong(), any());
+
+    }
+
 
 
 

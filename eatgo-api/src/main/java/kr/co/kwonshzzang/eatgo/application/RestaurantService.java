@@ -7,6 +7,7 @@ import kr.co.kwonshzzang.eatgo.domain.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -30,7 +31,16 @@ public class RestaurantService {
         return restaurant;
     }
 
-    public Restaurant addRestaurant(Restaurant restaurant) {
-        return restaurantRepository.save(restaurant);
+    public Restaurant addRestaurant(Restaurant resource) {
+        return restaurantRepository.save(resource);
+    }
+
+    @Transactional
+    public Restaurant updateRestaurant(Long id, Restaurant resource) {
+        Restaurant restaurant = restaurantRepository.findById(id).orElse(null);
+
+        restaurant.setName(resource.getName());
+        restaurant.setAddress(resource.getAddress());
+        return restaurant;
     }
 }

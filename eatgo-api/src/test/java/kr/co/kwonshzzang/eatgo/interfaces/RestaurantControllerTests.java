@@ -3,6 +3,8 @@ package kr.co.kwonshzzang.eatgo.interfaces;
 import kr.co.kwonshzzang.eatgo.application.RestaurantService;
 import kr.co.kwonshzzang.eatgo.domain.MenuItem;
 import kr.co.kwonshzzang.eatgo.domain.Restaurant;
+import kr.co.kwonshzzang.eatgo.exception.RestaurantNotFoundException;
+import kr.co.kwonshzzang.eatgo.exception.handler.RestaurantExceptionHandler;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,11 +15,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import  org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -31,6 +33,12 @@ class RestaurantControllerTests {
     @Autowired
     private RestaurantController restaurantController;
 
+//    @Autowired
+//    private RestaurantExceptionHandler restaurantExceptionHandler;
+
+    @Autowired
+    private WebApplicationContext was;
+
     private MockMvc mvc;
 
     @MockBean
@@ -39,7 +47,9 @@ class RestaurantControllerTests {
     @BeforeEach
     void beforeEach() {
         mvc = MockMvcBuilders
-                .standaloneSetup(restaurantController)
+//                .standaloneSetup(restaurantController)
+//                .setControllerAdvice(restaurantExceptionHandler)
+                .webAppContextSetup(was)
                 .alwaysDo(print())
                 .build();
     }
@@ -60,7 +70,7 @@ class RestaurantControllerTests {
     }
 
     @Test
-    void detail() throws Exception {
+    void detailWithExisted() throws Exception {
         Restaurant restaurant = Restaurant.builder().id(1004L).name("Bob zip").address("Seoul").build();
         restaurant.setMenuItems(Arrays.asList(MenuItem.builder().name("Kimchi").build()));
         when(restaurantService.getRestaurant(1004L)).thenReturn(restaurant);
@@ -70,7 +80,14 @@ class RestaurantControllerTests {
                 .andExpect(content().string(containsString("\"id\":1004")))
                 .andExpect(content().string(containsString("\"name\":\"Bob zip\"")))
                 .andExpect(content().string(containsString("Kimchi")));
+    }
 
+    @Test
+    void detailWithNotExisted() throws Exception {
+        when(restaurantService.getRestaurant(404L)).thenThrow(new RestaurantNotFoundException(404L));
+        mvc.perform(MockMvcRequestBuilders.get("/restaurants/404"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("{}"));
     }
 
     @Test
@@ -94,7 +111,6 @@ class RestaurantControllerTests {
                         .content("{\"name\":\"\",\"address\":\"\"}"))
                 .andExpect(status().isBadRequest());
     }
-
 
     @Test
     void updateWithValidData() throws Exception {

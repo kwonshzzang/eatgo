@@ -2,9 +2,10 @@ package kr.co.kwonshzzang.eatgo.interfaces;
 
 import kr.co.kwonshzzang.eatgo.application.RestaurantService;
 import kr.co.kwonshzzang.eatgo.domain.*;
+import kr.co.kwonshzzang.eatgo.exception.RestaurantNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -26,7 +27,8 @@ public class RestaurantController {
 
     @GetMapping("{id}")
     public Restaurant detail(@PathVariable Long id) {
-        return restaurantService.getRestaurant(id);
+        Restaurant restaurant = restaurantService.getRestaurant(id);
+        return restaurant;
     }
 
     @PostMapping
@@ -40,10 +42,5 @@ public class RestaurantController {
     public String update(@PathVariable Long id, @Valid @RequestBody Restaurant resource) {
         restaurantService.updateRestaurant(id, resource);
         return "{}";
-
     }
-
-
-
-
 }

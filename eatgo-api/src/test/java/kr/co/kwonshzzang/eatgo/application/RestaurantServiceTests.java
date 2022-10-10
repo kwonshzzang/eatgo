@@ -4,6 +4,7 @@ import kr.co.kwonshzzang.eatgo.domain.MenuItem;
 import kr.co.kwonshzzang.eatgo.domain.MenuItemRepository;
 import kr.co.kwonshzzang.eatgo.domain.Restaurant;
 import kr.co.kwonshzzang.eatgo.domain.RestaurantRepository;
+import kr.co.kwonshzzang.eatgo.exception.RestaurantNotFoundException;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ class RestaurantServiceTests {
     }
 
     @Test
-    void getRestaurant() {
+    void getRestaurantWithExisted() {
         when(restaurantRepository.findById(1004L)).thenReturn(Optional.of(Restaurant.builder()
                 .id(1004L)
                 .name("Bob zip")
@@ -55,6 +56,11 @@ class RestaurantServiceTests {
 
         assertEquals(restaurant.getId(), 1004L);
         assertEquals(menuItem.getName(), "Kimchi");
+    }
+
+    @Test
+    void getRestaurantWithNotExisted() {
+        assertThrows(RestaurantNotFoundException.class, () -> restaurantService.getRestaurant(404L));
     }
 
     @Test

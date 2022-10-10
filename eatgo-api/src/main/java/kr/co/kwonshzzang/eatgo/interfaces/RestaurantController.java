@@ -4,8 +4,10 @@ import kr.co.kwonshzzang.eatgo.application.RestaurantService;
 import kr.co.kwonshzzang.eatgo.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -28,14 +30,14 @@ public class RestaurantController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Restaurant resource) throws URISyntaxException {
+    public ResponseEntity<?> create(@Valid @RequestBody Restaurant resource) throws URISyntaxException {
         Restaurant restaurant = restaurantService.addRestaurant(resource);
         URI location = new URI("/restaurants/" + restaurant.getId() );
         return ResponseEntity.created(location).body("{}");
     }
 
     @PatchMapping("{id}")
-    public String update(@PathVariable Long id, @RequestBody Restaurant resource) {
+    public String update(@PathVariable Long id, @Valid @RequestBody Restaurant resource) {
         restaurantService.updateRestaurant(id, resource);
         return "{}";
 

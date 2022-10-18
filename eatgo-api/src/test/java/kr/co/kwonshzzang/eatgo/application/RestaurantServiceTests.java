@@ -1,9 +1,6 @@
 package kr.co.kwonshzzang.eatgo.application;
 
-import kr.co.kwonshzzang.eatgo.domain.MenuItem;
-import kr.co.kwonshzzang.eatgo.domain.MenuItemRepository;
-import kr.co.kwonshzzang.eatgo.domain.Restaurant;
-import kr.co.kwonshzzang.eatgo.domain.RestaurantRepository;
+import kr.co.kwonshzzang.eatgo.domain.*;
 import kr.co.kwonshzzang.eatgo.exception.RestaurantNotFoundException;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
@@ -15,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -27,6 +26,9 @@ class RestaurantServiceTests {
 
     @MockBean
     private MenuItemRepository menuItemRepository;
+
+    @MockBean
+    private ReviewRepository reviewRepository;
 
     @Test
     void getRestaurants() {
@@ -48,14 +50,23 @@ class RestaurantServiceTests {
                 .name("Bob zip")
                 .address("Seoul")
                 .build()));
-        when(menuItemRepository.findAllByRestaurantId(1004L)).thenReturn(Lists.newArrayList(MenuItem.builder().name("Kimchi").build()));
+        when(menuItemRepository.findAllByRestaurantId(1004L))
+                .thenReturn(Lists.newArrayList(MenuItem.builder().name("Kimchi").build()));
+        when(reviewRepository.findAllByRestaurantId(1004L))
+                .thenReturn(Lists.newArrayList(Review.builder().id(123L).name("kwonshzzang").score(3).description("Mat-it-da").build()));
 
         Restaurant restaurant = restaurantService.getRestaurant(1004L);
 
+        verify(menuItemRepository).findAllByRestaurantId(eq(1004L));
+        verify(reviewRepository).findAllByRestaurantId(eq(1004L));
+
         MenuItem menuItem = restaurant.getMenuItems().get(0);
+        Review review = restaurant.getReviews().get(0);
 
         assertEquals(restaurant.getId(), 1004L);
         assertEquals(menuItem.getName(), "Kimchi");
+        assertEquals(review.getName(), "kwonshzzang");
+        assertEquals(review.getScore(), 3);
     }
 
     @Test

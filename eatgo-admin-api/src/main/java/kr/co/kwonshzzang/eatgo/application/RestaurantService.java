@@ -13,11 +13,6 @@ public class RestaurantService {
     @Autowired
     private RestaurantRepository restaurantRepository;
 
-    @Autowired
-    private MenuItemRepository menuItemRepository;
-
-    @Autowired
-    private ReviewRepository reviewRepository;
 
     public List<Restaurant> getRestaurants() {
         return restaurantRepository.findAll();
@@ -26,16 +21,6 @@ public class RestaurantService {
 
     public Restaurant getRestaurant(Long id) {
         Restaurant restaurant = restaurantRepository.findById(id).orElseThrow(() -> new RestaurantNotFoundException(id));
-        List<MenuItem>  menuItems = menuItemRepository.findAllByRestaurantId(id);
-        restaurant.setMenuItems(menuItems);
-
-        List<Review> reviews = reviewRepository.findAllByRestaurantId(id);
-
-        System.out.println(reviews);
-
-
-        restaurant.setReviews(reviews);
-
         return restaurant;
     }
 

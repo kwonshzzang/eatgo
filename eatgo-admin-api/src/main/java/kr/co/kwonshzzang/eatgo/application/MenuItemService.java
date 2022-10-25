@@ -22,4 +22,8 @@ public class MenuItemService {
             }
         }
     }
+
+    public List<MenuItem> getMenuItems(long resturantId) {
+        return menuItemRepository.findAllByRestaurantId(resturantId);
+    }
 }

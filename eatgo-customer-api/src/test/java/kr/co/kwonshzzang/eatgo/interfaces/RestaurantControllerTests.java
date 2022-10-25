@@ -95,45 +95,4 @@ class RestaurantControllerTests {
                 .andExpect(content().string("{}"));
     }
 
-    @Test
-    void createWithValidData() throws Exception {
-        when(restaurantService.addRestaurant(any()))
-                .thenReturn(Restaurant.builder().id(1234L).name("BeRyong").address("Busan").build());
-         mvc.perform(MockMvcRequestBuilders.post("/restaurants")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"BeRyong\",\"address\":\"Busan\"}"))
-                .andExpect(status().isCreated())
-                .andExpect(header().string("location", "/restaurants/1234"))
-                .andExpect(content().string("{}"));
-
-        verify(restaurantService).addRestaurant(any());
-    }
-
-    @Test
-    void createWithInvalidData() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/restaurants")
-                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"\",\"address\":\"\"}"))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void updateWithValidData() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.patch("/restaurants/1004")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"JOKER Bar\", \"address\":\"Busan\"}"))
-                .andExpect(status().isOk());
-
-        verify(restaurantService).updateRestaurant(anyLong(), any());
-
-    }
-
-    @Test
-    void updateWithInvalidData() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.patch("/restaurants/1004")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"\", \"address\":\"Busan\"}"))
-                .andExpect(status().isBadRequest());
-    }
-
 }

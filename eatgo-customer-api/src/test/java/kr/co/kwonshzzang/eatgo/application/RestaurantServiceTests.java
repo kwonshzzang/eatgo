@@ -75,27 +75,4 @@ class RestaurantServiceTests {
         assertThrows(RestaurantNotFoundException.class, () -> restaurantService.getRestaurant(404L));
     }
 
-    @Test
-    void addRestaurant() {
-        Restaurant resource = Restaurant.builder().name("BeRyong").address("Busan").build();
-        Restaurant restaurant =Restaurant.builder().id(1234L).name("BeRyong").address("Busan").build();
-
-        when(restaurantRepository.save(resource)).thenReturn(restaurant);
-
-        Restaurant created = restaurantService.addRestaurant(resource);
-        assertEquals(created.getId(), 1234L);
-    }
-
-    @Test
-    void updateRestaurant() {
-        when(restaurantRepository.findById(1004L))
-                .thenReturn(Optional.of(Restaurant.builder().id(1004L).name("Bob zip").address("Seoul").build()));
-
-        Restaurant updated = restaurantService.updateRestaurant(1004L, Restaurant.builder().name("Sool zip").address("Busan").build());
-        assertEquals(updated.getName(), "Sool zip");
-        assertEquals(updated.getAddress(), "Busan");
-
-    }
-
-
 }

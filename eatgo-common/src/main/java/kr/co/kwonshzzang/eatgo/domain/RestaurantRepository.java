@@ -8,9 +8,4 @@ import java.util.Optional;
 
 @Repository
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
-    List<Restaurant> findAll();
-
-    Optional<Restaurant> findById(Long id);
-
-    Restaurant save(Restaurant restaurant);
 }

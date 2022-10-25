@@ -1,0 +1,67 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:2.7.3"
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.13.RELEASE"
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    group = 'kr.co.kwonshzzang'
+    version = '0.0.1-SNAPSHOT'
+    sourceCompatibility = '17'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+        implementation 'com.h2database:h2'
+        compileOnly 'org.projectlombok:lombok'
+        developmentOnly 'org.springframework.boot:spring-boot-devtools'
+        annotationProcessor 'org.projectlombok:lombok'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
+}
+
+project(':eatgo-common') {
+    bootJar {enabled = false}
+    jar {enabled = true}
+
+    dependencies {
+    }
+}
+
+project(':eatgo-admin-api') {
+    bootJar {enabled = true}
+    jar {enabled = true}
+
+    dependencies {
+        implementation project(':eatgo-common')
+    }
+}
+
+
+project(':eatgo-customer-api') {
+    bootJar {enabled = true}
+    jar {enabled = true}
+
+    dependencies {
+        implementation project(':eatgo-common')
+    }
+}

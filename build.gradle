@@ -47,6 +47,7 @@ project(':eatgo-common') {
     }
 }
 
+
 project(':eatgo-admin-api') {
     bootJar {enabled = true}
     jar {enabled = true}
